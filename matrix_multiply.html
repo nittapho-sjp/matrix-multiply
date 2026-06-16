@@ -139,11 +139,20 @@ button{font-family:'Sarabun',sans-serif;cursor:pointer;border:none;font-size:16p
   padding:14px 22px;border-radius:12px;z-index:500;box-shadow:var(--shadow);font-weight:600;opacity:0;transition:.3s}
 .toast.show{opacity:1;bottom:32px}
 footer{text-align:center;color:#7a8896;font-size:13px;margin-top:30px}
+#fsBar{display:none;position:sticky;top:0;z-index:600;background:var(--gold);
+  text-align:center;padding:10px 12px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+#fsBar button{background:var(--ink);color:#fff;font-weight:700;padding:11px 18px;border-radius:11px;
+  font-size:16px;width:100%;max-width:440px;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+#fsBar small{display:block;color:#5a3a00;font-weight:700;margin-top:6px;font-size:13px}
 @media(max-width:560px){body{font-size:16px}.cell{min-width:42px;height:44px;font-size:18px}
   .workbox{font-size:19px}.res{font-size:24px}.wline2{font-size:19px}}
 </style>
 </head>
 <body>
+<div id="fsBar">
+  <button onclick="openFull()">📱 แตะที่นี่เพื่อเปิดแบบเต็มหน้าจอ</button>
+  <small>กำลังแสดงในกรอบเล็ก แตะปุ่มด้านบนเพื่อใช้งานเต็มจอบนมือถือ</small>
+</div>
 <div class="wrap">
   <header class="app">
     <div class="logo brand">A×B</div>
@@ -247,7 +256,7 @@ footer{text-align:center;color:#7a8896;font-size:13px;margin-top:30px}
    ตั้งค่า Google Sheets ➜ วาง URL ของ Apps Script Web App ที่นี่
    (โค้ด Apps Script อยู่ในข้อความแชท)
    ============================================================ */
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxcw9RUQFOxyi8uJk0fctNhtF4C5mtLrETJc16MavmW3fQhu1iIap-aDWlAdOU3l6fodQ/exec";
+const WEB_APP_URL = "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
 /* ---------- รายชื่อนักเรียน ---------- */
 const STUDENTS = {
@@ -552,6 +561,17 @@ function checkPractice(){
   saveScore(got,total);
   box.scrollIntoView({behavior:'smooth',block:'center'});
 }
+
+/* ---------- เปิดแบบเต็มหน้าจอเมื่อถูกฝังใน Google Sites ----------
+   ⬇⬇ ใส่ URL จริงของแอปนี้บน GitHub Pages ลงในช่องนี้  เช่น
+   const APP_URL = "https://nittapho-sjp.github.io/multiply/matrix_multiply.html";  */
+const APP_URL = "https://nittapho-sjp.github.io/matrix-multiply/matrix_multiply.html";
+function openFull(){
+  const url=(APP_URL && APP_URL.indexOf('http')===0)?APP_URL:window.location.href;
+  window.open(url,'_blank','noopener');
+}
+(function(){let inFrame=false;try{inFrame=(window.self!==window.top)}catch(e){inFrame=true}
+  if(inFrame)$("fsBar").style.display="block";})();
 
 show('screen-login');
 </script>

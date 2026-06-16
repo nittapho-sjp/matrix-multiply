@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>การคูณเมทริกซ์ | คณิตศาสตร์ ม.5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#16202e;--paper:#f6f7f2;--grid:#d9e2dd;
+  --a:#3450c4;--a-soft:#e6eaff;
+  --b:#d9480f;--b-soft:#ffe9dd;
+  --res:#2b8a3e;--res-soft:#e4f6e7;
+  --gold:#f0a500;--danger:#e03131;--line:#c4cfc8;
+  --shadow:0 8px 30px rgba(22,32,46,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;color:var(--ink);font-size:18px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  background:linear-gradient(var(--grid) 1px,transparent 1px) 0 0/26px 26px,
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/26px 26px,var(--paper)}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 18px 80px}
+.brand{font-family:'Space Grotesk',sans-serif;letter-spacing:.5px}
+.mono{font-variant-numeric:tabular-nums}
+
+header.app{display:flex;align-items:center;gap:16px;padding:18px 22px;margin-bottom:22px;
+  border-radius:18px;background:linear-gradient(135deg,#16202e,#243450);color:#fff;
+  box-shadow:var(--shadow);position:relative;overflow:hidden}
+header.app::after{content:"×";position:absolute;right:24px;top:-18px;font-family:'Space Grotesk';
+  font-size:130px;font-weight:700;color:rgba(255,255,255,.06)}
+.logo{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:#fff;
+  color:var(--ink);font-family:'Space Grotesk';font-weight:700;font-size:24px;box-shadow:inset 0 0 0 3px var(--gold)}
+header.app h1{font-size:22px;font-weight:800}
+header.app p{font-size:14px;opacity:.85}
+.who{margin-left:auto;text-align:right;font-size:14px;line-height:1.3;position:relative;z-index:1}
+.who b{display:block;font-size:16px}
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:700;margin-bottom:6px}
+select,.txtinput{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;
+  font-family:'Sarabun';font-size:17px;background:#fff}
+select:focus{outline:none;border-color:var(--a)}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;
+  box-shadow:var(--shadow);margin-bottom:22px}
+.card h2{font-size:22px;font-weight:800;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card h2 .tag{font-family:'Space Grotesk';font-size:13px;font-weight:700;color:#fff;background:var(--ink);
+  padding:2px 10px;border-radius:999px}
+.sub{color:#5a6b7b;font-size:15px;margin-bottom:18px}
+
+button{font-family:'Sarabun',sans-serif;cursor:pointer;border:none;font-size:16px}
+.btn{padding:11px 18px;border-radius:12px;font-weight:700;background:var(--ink);color:#fff;
+  transition:transform .08s,box-shadow .15s;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.btn:hover{transform:translateY(-1px)} .btn:active{transform:translateY(1px);box-shadow:none}
+.btn.gold{background:var(--gold);color:#3a2a00} .btn.green{background:var(--res);color:#fff}
+.btn.ghost{background:#eef1f5;color:var(--ink);box-shadow:0 3px 0 #d4dae1}
+.btn.sm{padding:8px 13px;font-size:14px;border-radius:10px;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.tile{cursor:pointer;border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff;
+  transition:.15s;display:flex;flex-direction:column;gap:6px}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--a)}
+.tile .ic{font-family:'Space Grotesk';font-weight:700;font-size:30px}
+.tile h3{font-size:19px} .tile small{color:#5a6b7b}
+
+/* เมทริกซ์ */
+.stage{position:relative}
+.eqn{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:20px 0 4px;min-height:150px}
+.opsym{font-family:'Space Grotesk';font-size:38px;font-weight:700;color:#465a6e}
+.mlabel{text-align:center;font-weight:700;font-size:14px;margin-bottom:6px}
+.mlabel.A{color:var(--a)} .mlabel.B{color:var(--b)} .mlabel.R{color:var(--res)}
+.matrix{position:relative;display:inline-grid;gap:8px;padding:10px 16px}
+.matrix::before,.matrix::after{content:"";position:absolute;top:0;bottom:0;width:10px;border:3px solid #46566a}
+.matrix::before{left:0;border-right:none;border-radius:6px 0 0 6px}
+.matrix::after{right:0;border-left:none;border-radius:0 6px 6px 0}
+.cell{min-width:50px;height:50px;padding:0 8px;display:grid;place-items:center;border-radius:10px;
+  font-weight:700;font-size:21px;font-variant-numeric:tabular-nums;background:#f1f4f8;color:var(--ink);transition:.18s}
+.cell.A{background:var(--a-soft);color:var(--a)} .cell.B{background:var(--b-soft);color:var(--b)}
+.cell.R{background:#eef1f5;color:#9aa7b4;cursor:pointer}
+.cell.R.done{background:var(--res-soft);color:var(--res);font-size:25px;box-shadow:inset 0 0 0 2px var(--res)}
+.cell.rowhi{outline:3px solid var(--a);outline-offset:-1px;background:#d4dcff}
+.cell.colhi{outline:3px solid var(--b);outline-offset:-1px;background:#ffd9c6}
+.cell.blink{animation:blink .3s ease-in-out 4 alternate}
+.cell.flash{animation:flashpulse .55s ease;z-index:4}
+.cell.pop{animation:pop .45s ease}
+@keyframes blink{from{background:#fff;box-shadow:inset 0 0 0 2px var(--gold)}
+  to{background:var(--gold);color:#3a2a00;box-shadow:0 0 18px var(--gold)}}
+@keyframes flashpulse{0%{transform:scale(1)}45%{transform:scale(1.3);background:var(--gold);color:#3a2a00;box-shadow:0 0 16px var(--gold)}100%{transform:scale(1)}}
+@keyframes pop{0%{transform:scale(.5);opacity:.2}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.dimchip{display:inline-block;background:#eef1f5;border:1px solid var(--line);border-radius:999px;
+  padding:3px 12px;font-weight:600;font-size:14px;color:#465a6e}
+
+/* แผงแสดงวิธีคิด */
+.workbox{margin-top:18px;padding:18px;border-radius:14px;background:#fbfcfa;border:1px dashed var(--line);
+  min-height:96px;text-align:center;font-size:23px;line-height:1.9}
+.workbox .hint{color:#9aa7b4;font-size:16px;font-weight:600}
+.cterm{font-weight:800;font-family:'Space Grotesk'}
+.av{color:var(--a);font-weight:800} .bv{color:var(--b);font-weight:800}
+.op{color:#465a6e;font-weight:700}
+.wline2{margin-top:8px;font-size:23px}
+.res{color:var(--res);font-size:30px;font-weight:800}
+.ruleline{background:#eef4ff;border:1px solid #cdd9ff;border-radius:12px;padding:12px 16px;
+  font-size:15px;color:#33415c;margin-bottom:8px}
+.ruleline b{color:var(--a)}
+
+/* แบบฝึก */
+.qcard{border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;background:#fff}
+.qhead{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.qnum{font-family:'Space Grotesk';font-weight:700;background:var(--ink);color:#fff;width:32px;height:32px;
+  border-radius:9px;display:grid;place-items:center;flex:0 0 auto}
+.qpill{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:#eef1f5;color:#5a6b7b}
+.ansgrid{display:inline-grid;gap:6px;padding:8px 14px;position:relative}
+.ansgrid::before,.ansgrid::after{content:"";position:absolute;top:0;bottom:0;width:9px;border:3px solid #889}
+.ansgrid::before{left:0;border-right:none;border-radius:5px 0 0 5px}
+.ansgrid::after{right:0;border-left:none;border-radius:0 5px 5px 0}
+.ansgrid input,.fillin{text-align:center;font-weight:700;font-family:'Sarabun';font-variant-numeric:tabular-nums;
+  border:2px solid var(--line);border-radius:8px}
+.ansgrid input{width:54px;height:46px;font-size:19px}
+.fillin{width:110px;height:46px;font-size:19px}
+.ansgrid input:focus,.fillin:focus{outline:none;border-color:var(--a);background:var(--a-soft)}
+.ok{border-color:var(--res)!important;background:var(--res-soft)!important}
+.no{border-color:var(--danger)!important;background:#ffe3e3!important}
+.choice{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:11px;
+  padding:9px 16px;margin:6px 8px 0 0;cursor:pointer;transition:.12s;font-weight:700}
+.choice:hover{border-color:var(--a)} .choice.pick{border-color:var(--a);background:var(--a-soft)}
+.choice.ok{border-color:var(--res);background:var(--res-soft)} .choice.no{border-color:var(--danger);background:#ffe3e3}
+.matinline{display:inline-flex;vertical-align:middle;margin:0 4px}
+.matinline .matrix{gap:0;padding:5px 13px}
+.matinline .cell{background:transparent;color:var(--ink);min-width:32px;width:auto;height:30px;
+  padding:2px 7px;font-size:17px;border-radius:0}
+.note{font-size:15px;color:#5a6b7b;background:#f1f4f8;border-radius:10px;padding:12px 14px;margin-top:8px}
+.scorebox{text-align:center;padding:22px;border-radius:16px;background:var(--res-soft);border:2px solid var(--res);margin:6px 0 14px}
+.scorebox .big{font-family:'Space Grotesk';font-size:46px;font-weight:700;color:var(--res);line-height:1}
+.hidden{display:none!important}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;
+  padding:14px 22px;border-radius:12px;z-index:500;box-shadow:var(--shadow);font-weight:600;opacity:0;transition:.3s}
+.toast.show{opacity:1;bottom:32px}
+footer{text-align:center;color:#7a8896;font-size:13px;margin-top:30px}
+@media(max-width:560px){body{font-size:16px}.cell{min-width:42px;height:44px;font-size:18px}
+  .workbox{font-size:19px}.res{font-size:24px}.wline2{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app">
+    <div class="logo brand">A×B</div>
+    <div><h1>การคูณเมทริกซ์</h1><p>รายวิชาคณิตศาสตร์ · ชั้นมัธยมศึกษาปีที่ 5</p></div>
+    <div class="who" id="whoBox"></div>
+  </header>
+
+  <!-- เข้าสู่ระบบ -->
+  <section id="screen-login">
+    <div class="card">
+      <h2><span class="tag brand">START</span> เข้าสู่บทเรียน</h2>
+      <p class="sub">เลือกห้องและรายชื่อของนักเรียน เพื่อบันทึกคะแนนแบบฝึก</p>
+      <div class="field">
+        <label>เลือกห้องเรียน</label>
+        <select id="selClass" onchange="fillNames()">
+          <option value="">— เลือกห้อง —</option>
+          <option value="ม.5/1">ชั้นมัธยมศึกษาปีที่ 5/1</option>
+          <option value="ม.5/2">ชั้นมัธยมศึกษาปีที่ 5/2</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>เลือกชื่อนักเรียน</label>
+        <select id="selName"><option value="">— กรุณาเลือกห้องก่อน —</option></select>
+      </div>
+      <button class="btn green" onclick="doLogin()">เข้าสู่บทเรียน →</button>
+    </div>
+  </section>
+
+  <!-- หน้าแรก -->
+  <section id="screen-home">
+    <div class="card">
+      <h2>เลือกเมนู</h2>
+      <p class="sub">เริ่มจากดูวิธีคิดทีละขั้น แล้วลองทำแบบฝึกที่หลากหลาย</p>
+      <div class="menu">
+        <div class="tile" onclick="openLesson()">
+          <div class="ic" style="color:var(--a)">①②③</div>
+          <h3>เรียนรู้วิธีคูณทีละขั้น</h3>
+          <small>5 ตัวอย่าง · ดูที่มาของ cᵢⱼ จากแถวของ A คูณหลักของ B</small>
+        </div>
+        <div class="tile" onclick="openPractice()">
+          <div class="ic" style="color:var(--res)">✎</div>
+          <h3>แบบฝึกหลากหลาย</h3>
+          <small>10 ข้อ · ระดับง่ายถึงปานกลาง · มีจำนวนเต็มบวกและลบ</small>
+        </div>
+      </div>
+      <div class="ruleline" style="margin-top:18px">
+        <b>กติกาการคูณ:</b> ถ้า A มีขนาด m×<b>n</b> และ B มีขนาด <b>n</b>×p (จำนวนหลักของ A เท่ากับจำนวนแถวของ B)
+        จะคูณกันได้ ผลลัพธ์มีขนาด m×p &nbsp; โดย &nbsp;
+        c<sub>ij</sub> = a<sub>i1</sub>b<sub>1j</sub> + a<sub>i2</sub>b<sub>2j</sub> + … + a<sub>in</sub>b<sub>nj</sub>
+      </div>
+    </div>
+  </section>
+
+  <!-- บทเรียน -->
+  <section id="screen-lesson" class="hidden">
+    <div class="card">
+      <h2 id="lessonTitle"></h2>
+      <p class="sub" id="lessonDims"></p>
+      <div class="ruleline" id="ruleHint"></div>
+      <div class="stage" id="stage">
+        <div class="eqn" id="eqn"></div>
+        <div class="workbox" id="work"><span class="hint">กดปุ่ม “คำนวณทีละสมาชิก” หรือคลิกที่ช่องผลลัพธ์ เพื่อดูวิธีคิด</span></div>
+      </div>
+      <div class="btnrow" style="justify-content:center;margin-top:14px">
+        <button class="btn gold sm" id="btnStep" onclick="stepNext()">▶ คำนวณทีละสมาชิก</button>
+        <button class="btn green sm" onclick="playAll()">⏩ คำนวณทั้งหมด</button>
+        <button class="btn ghost sm" onclick="resetExample()">↻ เริ่มใหม่</button>
+      </div>
+      <div class="btnrow" id="rowBtns" style="justify-content:center;margin-top:8px"></div>
+      <hr style="margin:22px 0;border:none;border-top:1px solid var(--line)">
+      <div class="btnrow" style="justify-content:space-between">
+        <button class="btn ghost" id="prevEx" onclick="changeEx(-1)">◀ ตัวอย่างก่อนหน้า</button>
+        <span class="dimchip" id="exCounter"></span>
+        <button class="btn" id="nextEx" onclick="changeEx(1)">ตัวอย่างถัดไป ▶</button>
+      </div>
+      <div style="text-align:center;margin-top:16px"><button class="btn ghost sm" onclick="home()">← กลับเมนู</button></div>
+    </div>
+  </section>
+
+  <!-- แบบฝึก -->
+  <section id="screen-practice" class="hidden">
+    <div class="card">
+      <h2><span class="tag brand">DRILL</span> แบบฝึกการคูณเมทริกซ์</h2>
+      <p class="sub">มี 3 แบบ: ตรวจว่าคูณได้และหามิติ · หาสมาชิก cᵢⱼ · หาผลคูณทั้งหมด</p>
+      <div id="practiceList"></div>
+      <div class="btnrow" style="justify-content:center;margin-top:6px">
+        <button class="btn green" onclick="checkPractice()">ตรวจคำตอบ</button>
+        <button class="btn ghost" onclick="newPractice()">↻ ชุดใหม่</button>
+        <button class="btn ghost" onclick="home()">← กลับเมนู</button>
+      </div>
+      <div id="practiceResult" class="scorebox hidden"></div>
+    </div>
+  </section>
+
+  <footer>สื่ออิเล็กทรอนิกส์คณิตศาสตร์ · เรื่อง การคูณเมทริกซ์ · ชั้น ม.5</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   ตั้งค่า Google Sheets ➜ วาง URL ของ Apps Script Web App ที่นี่
+   (โค้ด Apps Script อยู่ในข้อความแชท)
+   ============================================================ */
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxcw9RUQFOxyi8uJk0fctNhtF4C5mtLrETJc16MavmW3fQhu1iIap-aDWlAdOU3l6fodQ/exec";
+
+/* ---------- รายชื่อนักเรียน ---------- */
+const STUDENTS = {
+  "ม.5/1":["นายกฤษฎา  อาจทวีกุล","นายภัทรดนัย  นัคราภิบาล","นายอภิสิทธิ์  เกริงรัมย์","นางสาวจิรัชยา  บุญมี","นางสาวธิติมา  เสาวรส","นางสาวภัทรวดี  ชื่นฉ่ำ","นางสาวภัทราวดี  เเสนกล้า","นางสาวศิริต้า  ยืนยาว","นางสาวอภัสนันท์  กริดรัมย์","นายดิชญา  อาจทวีกุล","นายพิชยาทร  แกมขุนทด","นายสรณ์สิริ  เหลือล้น","นายสุรดิษ  สมสวย","นายอดิศักดิ์  สุทธิ","นางสาวสุนิสา  รอดสวัสดิ์","นายจักริน  จานรัมย์","นายพิชิต  จันทร์วิเชียร","นายศักดิ์ชาย  การเพียร","นางสาวณัฐธิดา  บุญยงค์","นายรังสรรค์  ระแสนพรหม","นางสาวยุวนิดา  กรอบรัมย์","นายชนพล  กึนรัมย์","นางสาวกัลยารัตน์  เปมะวัฒนะ","นายสิทธิโชค  จอมประโคน","นางสาวธิยดา  การเพียร","นางสาวปานวาด  หงษ์ทอง"],
+  "ม.5/2":["นายนัฐพล นัคราภิบาล","นายเกียรติศักดิ์  สุมรัมย์","นายน้ำพุ  ยาประโคน","นายศุภชัย  มะโนรัมย์","นายสุริยา  ฤาชา","นายอมรเทพ  พูนพานิช","นางสาวณัฐชา  เเช่มเย็น","นางสาวลัลน์วรินทร์  มุขขันธ์","นางสาวอรจิรา  จิรัมย์","นายนันทวุฒิ  อาจทวีกุล","นายปรีดี  วิโสรัมย์","นายศักดิ์ชัย  กอยรัมย์","นายสุทธิภัทร  จันทร์จำรัส","นายศุกลรวัฒน์  กล่าวรัมย์","นายสิทธิชัย  ยะสาระ","นายหิรัณย์  อุสารัมย์","นางสาวทักษพร กอยรัมย์","นางสาวทิวลิป  เกรัมย์","นางสาวธนิสร  คะเรรัมย์","นายณัฐพงษ์  เกรัมย์"]
+};
+let student={cls:"",name:""};
+
+/* ---------- ตัวช่วยทั่วไป ---------- */
+function $(id){return document.getElementById(id)}
+function show(id){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0)}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2400)}
+
+function fillNames(){
+  const c=$("selClass").value,sel=$("selName");
+  sel.innerHTML='<option value="">— เลือกชื่อ —</option>';
+  if(!c)return;
+  STUDENTS[c].forEach((n,i)=>{const o=document.createElement('option');o.value=n;o.textContent=(i+1)+". "+n;sel.appendChild(o)});
+}
+function doLogin(){
+  const c=$("selClass").value,n=$("selName").value;
+  if(!c||!n){toast("กรุณาเลือกห้องและชื่อนักเรียน");return}
+  student={cls:c,name:n};
+  $("whoBox").innerHTML=`<b>${n}</b>${c}`;
+  show('screen-home');
+}
+
+/* ---------- เชื่อม Google Sheets ---------- */
+function saveScore(score,total){
+  const status=$("saveStatus");
+  if(status)status.textContent="กำลังบันทึกคะแนนไปยัง Google Sheets...";
+  if(!WEB_APP_URL||WEB_APP_URL.indexOf("PASTE_YOUR")===0){
+    if(status)status.innerHTML="⚠ ยังไม่ได้ตั้งค่า Google Sheets (ครูต้องวาง URL Apps Script) — คะแนนนี้ยังไม่ถูกบันทึก";
+    return;
+  }
+  fetch(WEB_APP_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({type:"result",activity:"การคูณเมทริกซ์ - แบบฝึก",
+      timestamp:new Date().toISOString(),class:student.cls,name:student.name,score:score,total:total})})
+    .then(()=>{if(status)status.innerHTML="✅ บันทึกคะแนนเรียบร้อยแล้ว";})
+    .catch(()=>{if(status)status.innerHTML="⚠ บันทึกไม่สำเร็จ ลองตรวจการเชื่อมต่ออินเทอร์เน็ตอีกครั้ง";});
+}
+
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function fnum(n){return String(n).replace('-','−')}
+const SUBS=["","₁","₂","₃","₄","₅"];
+function csub(i,j){return "c"+SUBS[i]+SUBS[j]}
+function dims(M){return M.length+"×"+M[0].length}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function matMul(A,B){
+  const r=A.length,n=A[0].length,c=B[0].length;
+  const C=Array.from({length:r},()=>Array(c).fill(0));
+  for(let i=0;i<r;i++)for(let j=0;j<c;j++){let s=0;for(let k=0;k<n;k++)s+=A[i][k]*B[k][j];C[i][j]=s}
+  return C;
+}
+// เมทริกซ์ inline แบบทางการ (วงเล็บใหญ่)
+function matHTML(M){let inner="";M.forEach(row=>row.forEach(v=>inner+=`<div class="cell">${fnum(v)}</div>`));
+  return `<span class="matinline"><span class="matrix" style="grid-template-columns:repeat(${M[0].length},auto)">${inner}</span></span>`}
+
+/* ---------- ตัวอย่างบทเรียน (มีบวกและลบ) ---------- */
+const EXAMPLES=[
+  {A:[[2,-1],[0,3]],            B:[[1,4],[-2,1]]},
+  {A:[[1,-2,1],[3,0,-1]],       B:[[2,1],[-1,3],[0,4]]},
+  {A:[[2,-3,1]],                B:[[4],[1],[-2]]},
+  {A:[[1,2],[-1,0],[3,-2]],     B:[[2,-1,1],[0,3,-2]]},
+  {A:[[1,-1],[2,3]],            B:[[2,0,-1],[1,4,2]]}
+];
+let lesson={idx:0,revealed:[],busy:false};
+
+function openLesson(){lesson={idx:0,revealed:[],busy:false};show('screen-lesson');renderLesson()}
+function openPractice(){newPractice();show('screen-practice')}
+function home(){show('screen-home')}
+
+function renderLesson(){
+  const ex=EXAMPLES[lesson.idx], C=matMul(ex.A,ex.B);
+  const m=ex.A.length,n=ex.A[0].length,p=ex.B[0].length;
+  $("lessonTitle").innerHTML=`<span class="tag brand">EX ${lesson.idx+1}</span> การคูณเมทริกซ์`;
+  $("lessonDims").textContent=`ตัวอย่างที่ ${lesson.idx+1} : A ขนาด ${m}×${n}  คูณกับ  B ขนาด ${n}×${p}  →  ผลลัพธ์ ${m}×${p}`;
+  $("ruleHint").innerHTML=`จำนวนหลักของ A = จำนวนแถวของ B = <b>${n}</b> จึงคูณกันได้ · สมาชิกผลลัพธ์ c<sub>ij</sub> เกิดจาก <b>แถวที่ i ของ A</b> คูณ <b>หลักที่ j ของ B</b> แล้วบวกกัน`;
+  $("exCounter").textContent=`ตัวอย่าง ${lesson.idx+1} / ${EXAMPLES.length}`;
+  lesson.revealed=C.map(r=>r.map(()=>false));
+  lesson.busy=false;
+  drawEqn();
+  resetWork();
+  buildRowBtns();
+  $("prevEx").disabled=lesson.idx===0;
+  $("nextEx").disabled=lesson.idx===EXAMPLES.length-1;
+}
+function drawEqn(){
+  const ex=EXAMPLES[lesson.idx], C=matMul(ex.A,ex.B);
+  const eqn=$("eqn");eqn.innerHTML="";
+  eqn.appendChild(matrixEl(ex.A,"A","mA"));
+  eqn.appendChild(opEl("×"));
+  eqn.appendChild(matrixEl(ex.B,"B","mB"));
+  eqn.appendChild(opEl("="));
+  const R=C.map((row,i)=>row.map((v,j)=>lesson.revealed[i][j]?v:null));
+  eqn.appendChild(matrixEl(R,"R","mC"));
+}
+function matrixEl(M,kind,id){
+  const wrap=document.createElement('div');
+  const lab=document.createElement('div');lab.className="mlabel "+kind;
+  lab.textContent=kind==="A"?"เมทริกซ์ A":kind==="B"?"เมทริกซ์ B":"ผลลัพธ์ C";
+  wrap.appendChild(lab);
+  const mm=document.createElement('div');mm.className="matrix";mm.id=id;
+  mm.style.gridTemplateColumns=`repeat(${M[0].length},auto)`;
+  M.forEach((row,i)=>row.forEach((v,j)=>{
+    const c=document.createElement('div');c.className="cell "+kind;c.dataset.i=i;c.dataset.j=j;
+    if(kind==="R"){
+      if(v===null){c.textContent="?";c.onclick=()=>{if(!lesson.busy)computeCell(i,j)}}
+      else{c.textContent=fnum(v);c.classList.add("done")}
+    }else c.textContent=fnum(v);
+    mm.appendChild(c);
+  }));
+  wrap.appendChild(mm);return wrap;
+}
+function opEl(s){const d=document.createElement('div');d.className="opsym";d.textContent=s;return d}
+function resetWork(){$("work").innerHTML='<span class="hint">กดปุ่ม “คำนวณทีละสมาชิก” หรือคลิกที่ช่องผลลัพธ์ เพื่อดูวิธีคิด</span>'}
+
+function buildRowBtns(){
+  const ex=EXAMPLES[lesson.idx], rows=ex.A.length;
+  const box=$("rowBtns");box.innerHTML='<span style="font-size:13px;font-weight:700;color:#5a6b7b;align-self:center">คำนวณทั้งแถว:</span>';
+  for(let i=0;i<rows;i++){const b=document.createElement('button');b.className="btn ghost sm";
+    b.textContent="แถวที่ "+(i+1);b.onclick=()=>computeRow(i);box.appendChild(b)}
+}
+
+/* ---------- แอนิเมชันคูณทีละขั้น ---------- */
+async function computeCell(i,j){
+  if(lesson.busy)return;lesson.busy=true;await revealCellMul(i,j);lesson.busy=false;
+}
+async function revealCellMul(i,j){
+  const ex=EXAMPLES[lesson.idx];
+  if(lesson.revealed[i][j])return;
+  const n=ex.A[0].length;
+  const target=document.querySelector(`#mC .cell[data-i="${i}"][data-j="${j}"]`);
+  // 1) ไฟกระพริบที่ช่องผลลัพธ์ + ไฮไลต์แถว A และ หลัก B
+  target.classList.add("blink");
+  for(let k=0;k<n;k++){
+    document.querySelector(`#mA .cell[data-i="${i}"][data-j="${k}"]`).classList.add("rowhi");
+    document.querySelector(`#mB .cell[data-i="${k}"][data-j="${j}"]`).classList.add("colhi");
+  }
+  await sleep(1200);target.classList.remove("blink");
+  // 2) สร้างแผงวิธีคิด ทีละพจน์
+  const work=$("work");
+  work.innerHTML=`<span class="cterm">${csub(i+1,j+1)}</span> <span class="op">=</span> `;
+  let sum=0;const parts=[];
+  for(let k=0;k<n;k++){
+    const aCell=document.querySelector(`#mA .cell[data-i="${i}"][data-j="${k}"]`);
+    const bCell=document.querySelector(`#mB .cell[data-i="${k}"][data-j="${j}"]`);
+    aCell.classList.remove("flash");bCell.classList.remove("flash");void aCell.offsetWidth;
+    aCell.classList.add("flash");bCell.classList.add("flash");
+    const a=ex.A[i][k],b=ex.B[k][j],pr=a*b;sum+=pr;parts.push(pr);
+    const term=`${k>0?'<span class="op"> + </span>':''}(<span class="av">${fnum(a)}</span>)(<span class="bv">${fnum(b)}</span>)`;
+    work.insertAdjacentHTML('beforeend',term);
+    await sleep(820);
+  }
+  // 3) บรรทัดสรุปผล
+  const line2=parts.map(p=>p<0?`(${fnum(p)})`:fnum(p)).join(' <span class="op">+</span> ');
+  work.insertAdjacentHTML('beforeend',`<div class="wline2"><span class="op">=</span> ${line2} <span class="op">=</span> <span class="res">${fnum(sum)}</span></div>`);
+  await sleep(950);
+  // 4) เติมผลลัพธ์ลงช่อง C ตัวใหญ่ชัดเจน
+  lesson.revealed[i][j]=true;
+  target.textContent=fnum(sum);target.onclick=null;
+  target.classList.add("done","pop");
+  for(let k=0;k<n;k++){
+    document.querySelector(`#mA .cell[data-i="${i}"][data-j="${k}"]`).classList.remove("rowhi","flash");
+    document.querySelector(`#mB .cell[data-i="${k}"][data-j="${j}"]`).classList.remove("colhi","flash");
+  }
+  await sleep(450);target.classList.remove("pop");
+}
+async function stepNext(){
+  if(lesson.busy)return;lesson.busy=true;$("btnStep").disabled=true;
+  const C=matMul(EXAMPLES[lesson.idx].A,EXAMPLES[lesson.idx].B);
+  outer:for(let i=0;i<C.length;i++)for(let j=0;j<C[0].length;j++)
+    if(!lesson.revealed[i][j]){await revealCellMul(i,j);break outer}
+  lesson.busy=false;$("btnStep").disabled=false;
+}
+async function computeRow(i){
+  if(lesson.busy)return;lesson.busy=true;
+  const C=matMul(EXAMPLES[lesson.idx].A,EXAMPLES[lesson.idx].B);
+  for(let j=0;j<C[0].length;j++)await revealCellMul(i,j);
+  lesson.busy=false;
+}
+async function playAll(){
+  if(lesson.busy)return;lesson.busy=true;
+  const C=matMul(EXAMPLES[lesson.idx].A,EXAMPLES[lesson.idx].B);
+  for(let i=0;i<C.length;i++)for(let j=0;j<C[0].length;j++)await revealCellMul(i,j);
+  lesson.busy=false;
+}
+function resetExample(){if(lesson.busy)return;const C=matMul(EXAMPLES[lesson.idx].A,EXAMPLES[lesson.idx].B);
+  lesson.revealed=C.map(r=>r.map(()=>false));drawEqn();resetWork()}
+function changeEx(d){if(lesson.busy)return;const n=lesson.idx+d;if(n<0||n>=EXAMPLES.length)return;lesson.idx=n;renderLesson()}
+
+/* ---------- แบบฝึกหลากหลาย ---------- */
+let practice=[];
+function smallMat(r,c){return Array.from({length:r},()=>Array.from({length:c},()=>rnd(-5,5)))}
+
+function newPractice(){
+  practice=[];
+  // ส่วนที่ 1: คูณกันได้ไหม + มิติ (3 ข้อ)
+  for(let t=0;t<3;t++)practice.push(genDim());
+  // ส่วนที่ 2: หาสมาชิก cᵢⱼ (4 ข้อ)
+  for(let t=0;t<4;t++)practice.push(genElem());
+  // ส่วนที่ 3: หาผลคูณทั้งหมด (3 ข้อ)
+  for(let t=0;t<3;t++)practice.push(genFull());
+  $("practiceResult").classList.add("hidden");
+  renderPractice();
+}
+function genDim(){
+  const m=rnd(2,3),n=rnd(2,3),q=rnd(2,3);
+  const conform=Math.random()<0.55;
+  const p=conform?n:(n===2?3:2);
+  const correct=(n===p)?`${m}×${q}`:"คูณไม่ได้";
+  const opts=new Set([correct]);
+  opts.add(`${m}×${q}`);opts.add(`${n}×${q}`);opts.add(`${m}×${p}`);opts.add("คูณไม่ได้");
+  let arr=[...opts].slice(0,4);
+  if(!arr.includes(correct))arr[0]=correct;
+  arr=shuffle(arr);
+  return {type:'dim',m,n,p,q,correct,opts:arr,pick:-1};
+}
+function genElem(){
+  const inner=rnd(2,3),r=rnd(2,2),c=rnd(2,2);
+  const A=smallMat(r,inner),B=smallMat(inner,c);
+  const i=rnd(0,r-1),j=rnd(0,c-1);
+  let ans=0;for(let k=0;k<inner;k++)ans+=A[i][k]*B[k][j];
+  return {type:'elem',A,B,i,j,ans};
+}
+function genFull(){
+  const inner=2,r=2,c=rnd(2,3);
+  const A=smallMat(r,inner),B=smallMat(inner,c);
+  return {type:'full',A,B,C:matMul(A,B)};
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function renderPractice(){
+  const list=$("practiceList");list.innerHTML="";
+  practice.forEach((q,qi)=>{
+    const card=document.createElement('div');card.className="qcard";
+    const head=document.createElement('div');head.className="qhead";
+    const pill=q.type==='dim'?'หามิติ':q.type==='elem'?'หาสมาชิก':'หาผลคูณ';
+    head.innerHTML=`<div class="qnum">${qi+1}</div><div class="qpill">${pill}</div>`;
+    card.appendChild(head);
+    if(q.type==='dim'){
+      const body=document.createElement('div');
+      body.innerHTML=`กำหนด A มีขนาด <b>${q.m}×${q.n}</b> และ B มีขนาด <b>${q.p}×${q.q}</b><br>
+        ถ้าคูณ A × B ได้ ผลลัพธ์มีขนาดเท่าใด? (ถ้าคูณไม่ได้ให้เลือก “คูณไม่ได้”)`;
+      const wrap=document.createElement('div');wrap.style.marginTop="10px";
+      q.opts.forEach((op,oi)=>{const ch=document.createElement('span');ch.className="choice";ch.textContent=op;
+        ch.onclick=()=>{wrap.querySelectorAll('.choice').forEach(x=>x.classList.remove('pick'));ch.classList.add('pick');q.pick=oi};
+        wrap.appendChild(ch)});
+      body.appendChild(wrap);card.appendChild(body);
+    }
+    else if(q.type==='elem'){
+      const body=document.createElement('div');
+      body.innerHTML=`กำหนด A = ${matHTML(q.A)} และ B = ${matHTML(q.B)}<br>
+        จงหาค่าสมาชิก <b class="mono">${csub(q.i+1,q.j+1)}</b> ของ A × B
+        <span class="note" style="display:inline-block;margin-left:6px">นำแถวที่ ${q.i+1} ของ A คูณหลักที่ ${q.j+1} ของ B</span>`;
+      const inp=document.createElement('input');inp.className="fillin";inp.id="pe"+qi;inp.placeholder="ตอบ";
+      inp.style.marginTop="10px";inp.inputMode="numeric";
+      body.appendChild(document.createElement('br'));body.appendChild(inp);
+      card.appendChild(body);
+    }
+    else{
+      const body=document.createElement('div');
+      const eq=document.createElement('div');eq.className="eqn";eq.style.minHeight="auto";
+      eq.appendChild(matrixEl(q.A,"A","fa"+qi));eq.appendChild(opEl("×"));
+      eq.appendChild(matrixEl(q.B,"B","fb"+qi));eq.appendChild(opEl("="));
+      const wrap=document.createElement('div');
+      const lab=document.createElement('div');lab.className="mlabel R";lab.textContent="ผลลัพธ์ C";wrap.appendChild(lab);
+      const g=document.createElement('div');g.className="ansgrid";g.style.gridTemplateColumns=`repeat(${q.C[0].length},auto)`;
+      q.C.forEach((row,i)=>row.forEach((_,j)=>{const inp=document.createElement('input');
+        inp.inputMode="numeric";inp.dataset.q=qi;inp.dataset.i=i;inp.dataset.j=j;g.appendChild(inp)}));
+      wrap.appendChild(g);eq.appendChild(wrap);body.appendChild(eq);card.appendChild(body);
+    }
+    list.appendChild(card);
+  });
+}
+function checkPractice(){
+  let got=0,total=0;
+  practice.forEach((q,qi)=>{
+    if(q.type==='dim'){
+      total++;const chips=document.querySelectorAll(`#practiceList .qcard:nth-child(${qi+1}) .choice`);
+      chips.forEach((ch,oi)=>{ch.classList.remove('ok','no');
+        if(q.opts[oi]===q.correct)ch.classList.add('ok');
+        else if(oi===q.pick)ch.classList.add('no')});
+      if(q.pick>=0&&q.opts[q.pick]===q.correct)got++;
+    }else if(q.type==='elem'){
+      total++;const inp=$("pe"+qi);inp.classList.remove('ok','no');
+      const v=inp.value.trim();
+      if(v!==""&&parseInt(v,10)===q.ans){inp.classList.add('ok');got++}else inp.classList.add('no');
+    }else{
+      total++;let allok=true;
+      document.querySelectorAll(`#practiceList .ansgrid input[data-q="${qi}"]`).forEach(inp=>{
+        const i=+inp.dataset.i,j=+inp.dataset.j,v=inp.value.trim();inp.classList.remove('ok','no');
+        if(v!==""&&parseInt(v,10)===q.C[i][j])inp.classList.add('ok');else{inp.classList.add('no');allok=false}
+      });
+      if(allok)got++;
+    }
+  });
+  const box=$("practiceResult");box.classList.remove('hidden');
+  box.innerHTML=`<div class="big mono">${got} / ${total}</div>
+    <p style="margin-top:8px;font-weight:700">${got===total?'เยี่ยมมาก ถูกทุกข้อ! 🎉':got>=total*0.6?'ทำได้ดี ลองตรวจข้อที่ผิดอีกครั้งนะ':'ทบทวนวิธีคูณแถว×หลักอีกครั้ง แล้วลองใหม่'}</p>
+    <p id="saveStatus" style="margin-top:6px;font-size:15px;color:#33415c"></p>`;
+  saveScore(got,total);
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+show('screen-login');
+</script>
+</body>
+</html>
